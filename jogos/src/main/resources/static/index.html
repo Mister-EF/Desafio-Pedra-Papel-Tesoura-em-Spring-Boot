@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Jogo: Pedra, Papel ou Tesoura</title>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+    .caixa { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
+    button:hover { background: #0056b3; }
+    .botao-jogada { font-size: 18px; padding: 15px 25px; margin: 5px; }
+    #mensagem { font-size: 20px; font-weight: bold; text-align: center; }
+    .ganhou { color: #28a745; }
+    .perdeu { color: #dc3545; }
+    .empate { color: #6c757d; }
+    a { color: #007bff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+    <div class="caixa">
+        <h2>Pedra, Papel ou Tesoura</h2>
+        <p>Escolha a sua jogada:</p>
+        <button class="botao-jogada" onclick="jogar('pedra')">Pedra</button>
+        <button class="botao-jogada" onclick="jogar('papel')">Papel</button>
+        <button class="botao-jogada" onclick="jogar('tesoura')">Tesoura</button>
+    </div>
+
+    <div class="caixa">
+        <h2>Resultado</h2>
+        <p id="mensagem">Faça a sua jogada!</p>
+        <p id="detalhes"></p>
+    </div>
+
+    <script>
+        const nomes = { PEDRA: 'Pedra', PAPEL: 'Papel', TESOURA: 'Tesoura' };
+
+        async function jogar(escolha) {
+            const resposta = await fetch('pedrapapeltesoura/jogar?escolha=' + encodeURIComponent(escolha));
+            const resultado = await resposta.json();
+
+            const mensagem = document.getElementById('mensagem');
+            mensagem.textContent = resultado.mensagem;
+
+            if (resultado.venceu) {
+                mensagem.className = 'ganhou';
+            } else if (resultado.empatou) {
+                mensagem.className = 'empate';
+            } else {
+                mensagem.className = 'perdeu';
+            }
+
+            if (resultado.escolhaComputador) {
+                document.getElementById('detalhes').textContent =
+                    'Você: ' + nomes[resultado.escolhaJogador] + ' | Computador: ' + nomes[resultado.escolhaComputador];
+            } else {
+                document.getElementById('detalhes').textContent = '';
+            }
+        }
+    </script>
+</body>
+</html>
